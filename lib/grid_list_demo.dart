@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:controle_visitas/main.dart';
+// import 'gallery/demo.dart';
 
-import 'gallery/demo.dart';
-
-enum GridDemoTileStyle {
+enum GridImageStyle {
   imageOnly,
   oneLine,
   twoLine
@@ -162,7 +162,7 @@ class GridDemoPhotoItem extends StatelessWidget {
        super(key: key);
 
   final Photo photo;
-  final GridDemoTileStyle tileStyle;
+  final GridImageStyle tileStyle;
   final BannerTapCallback onBannerTap; // User taps on the photo's header or footer.
 
   void showPhoto(BuildContext context) {
@@ -201,10 +201,10 @@ class GridDemoPhotoItem extends StatelessWidget {
     final IconData icon = photo.isFavorite ? Icons.star : Icons.star_border;
 
     switch (tileStyle) {
-      case GridDemoTileStyle.imageOnly:
+      case GridImageStyle.imageOnly:
         return image;
 
-      case GridDemoTileStyle.oneLine:
+      case GridImageStyle.oneLine:
         return GridTile(
           header: GestureDetector(
             onTap: () { onBannerTap(photo); },
@@ -220,7 +220,7 @@ class GridDemoPhotoItem extends StatelessWidget {
           child: image,
         );
 
-      case GridDemoTileStyle.twoLine:
+      case GridImageStyle.twoLine:
         return GridTile(
           footer: GestureDetector(
             onTap: () { onBannerTap(photo); },
@@ -242,17 +242,11 @@ class GridDemoPhotoItem extends StatelessWidget {
   }
 }
 
-class GridListDemo extends StatefulWidget {
-  const GridListDemo({ Key key }) : super(key: key);
 
-  static const String routeName = '/material/grid-list';
+class BuildGridImage extends State<GridImageList> {
+    function()=>print('Declarando lista');
 
-  @override
-  GridListDemoState createState() => GridListDemoState();
-}
-
-class GridListDemoState extends State<GridListDemo> {
-  GridDemoTileStyle _tileStyle = GridDemoTileStyle.twoLine;
+  GridImageStyle _tileStyle = GridImageStyle.twoLine;
 
   List<Photo> photos = <Photo>[
     Photo(
@@ -267,69 +261,9 @@ class GridListDemoState extends State<GridListDemo> {
       title: 'Tanjore',
       caption: 'Bronze Works',
     ),
-    Photo(
-      assetName: 'places/india_tanjore_market_merchant.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Tanjore',
-      caption: 'Market',
-    ),
-    Photo(
-      assetName: 'places/india_tanjore_thanjavur_temple.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Tanjore',
-      caption: 'Thanjavur Temple',
-    ),
-    Photo(
-      assetName: 'places/india_tanjore_thanjavur_temple_carvings.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Tanjore',
-      caption: 'Thanjavur Temple',
-    ),
-    Photo(
-      assetName: 'places/india_pondicherry_salt_farm.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Pondicherry',
-      caption: 'Salt Farm',
-    ),
-    Photo(
-      assetName: 'places/india_chennai_highway.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Chennai',
-      caption: 'Scooters',
-    ),
-    Photo(
-      assetName: 'places/india_chettinad_silk_maker.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Chettinad',
-      caption: 'Silk Maker',
-    ),
-    Photo(
-      assetName: 'places/india_chettinad_produce.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Chettinad',
-      caption: 'Lunch Prep',
-    ),
-    Photo(
-      assetName: 'places/india_tanjore_market_technology.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Tanjore',
-      caption: 'Market',
-    ),
-    Photo(
-      assetName: 'places/india_pondicherry_beach.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Pondicherry',
-      caption: 'Beach',
-    ),
-    Photo(
-      assetName: 'places/india_pondicherry_fisherman.png',
-      assetPackage: _kGalleryAssetsPackage,
-      title: 'Pondicherry',
-      caption: 'Fisherman',
-    ),
   ];
 
-  void changeTileStyle(GridDemoTileStyle value) {
+  void changeTileStyle(GridImageStyle value) {
     setState(() {
       _tileStyle = value;
     });
@@ -337,25 +271,26 @@ class GridListDemoState extends State<GridListDemo> {
 
   @override
   Widget build(BuildContext context) {
-    final Orientation orientation = MediaQuery.of(context).orientation;
+    print('Orientação do screen');
+    // final Orientation orientation = MediaQuery.of(context).orientation;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Grid list'),
-        actions: <Widget>[
-          MaterialDemoDocumentationButton(GridListDemo.routeName),
-          PopupMenuButton<GridDemoTileStyle>(
+        actions: <Widget>[ 
+          // MaterialDemoDocumentationButton(GridListDemo.routeName),
+          PopupMenuButton<GridImageStyle>(
             onSelected: changeTileStyle,
-            itemBuilder: (BuildContext context) => <PopupMenuItem<GridDemoTileStyle>>[
-              const PopupMenuItem<GridDemoTileStyle>(
-                value: GridDemoTileStyle.imageOnly,
+            itemBuilder: (BuildContext context) => <PopupMenuItem<GridImageStyle>>[
+              const PopupMenuItem<GridImageStyle>(
+                value: GridImageStyle.imageOnly,
                 child: Text('Image only'),
               ),
-              const PopupMenuItem<GridDemoTileStyle>(
-                value: GridDemoTileStyle.oneLine,
+              const PopupMenuItem<GridImageStyle>(
+                value: GridImageStyle.oneLine,
                 child: Text('One line'),
               ),
-              const PopupMenuItem<GridDemoTileStyle>(
-                value: GridDemoTileStyle.twoLine,
+              const PopupMenuItem<GridImageStyle>(
+                value: GridImageStyle.twoLine,
                 child: Text('Two line'),
               ),
             ],
@@ -369,11 +304,11 @@ class GridListDemoState extends State<GridListDemo> {
               top: false,
               bottom: false,
               child: GridView.count(
-                crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3,
+                crossAxisCount: 2,// (orientation == Orientation.portrait) ? 2 : 3,
                 mainAxisSpacing: 4.0,
                 crossAxisSpacing: 4.0,
                 padding: const EdgeInsets.all(4.0),
-                childAspectRatio: (orientation == Orientation.portrait) ? 1.0 : 1.3,
+                childAspectRatio: 1.0,// (orientation == Orientation.portrait) ? 1.0 : 1.3,
                 children: photos.map<Widget>((Photo photo) {
                   return GridDemoPhotoItem(
                     photo: photo,

@@ -1,6 +1,8 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import '../basic.dart';
+
 
 import 'package:flutter/material.dart';
 
@@ -69,18 +71,18 @@ class GalleryDemo {
     @required this.category,
     @required this.routeName,
     this.documentationUrl,
-    // @required this.buildRoute,
+    @required this.buildRoute,
   }) : assert(title != null),
        assert(category != null),
-       assert(routeName != null);
-      //  assert(buildRoute != null);
+       assert(routeName != null),
+       assert(buildRoute != null);
 
   final String title;
   final IconData icon;
   final String subtitle;
   final GalleryDemoCategory category;
   final String routeName;
-  // final WidgetBuilder buildRoute;
+  final WidgetBuilder buildRoute;
   final String documentationUrl;
 
   @override
@@ -98,7 +100,7 @@ List<GalleryDemo> _buildGalleryDemos() {
       icon: GalleryIcons.shrine,
       category: _kDemos,
       routeName: '/algo',
-      // buildRoute: (BuildContext context) => const ShrineDemo(),
+      buildRoute: (BuildContext context) => PestoDemo(),
     ),
   ];
 
@@ -111,8 +113,8 @@ List<GalleryDemo> _buildGalleryDemos() {
         subtitle: 'Simple recipe browser',
         icon: Icons.adjust,
         category: _kDemos,
-        routeName: '/algo2',
-        // buildRoute: (BuildContext context) => const PestoDemo(),
+        routeName: '/pesto',
+        buildRoute: (BuildContext context) => const PestoDemo(),
       ),
     );
     return true;
