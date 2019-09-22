@@ -1,4 +1,4 @@
-package com.example.controle_visitas
+package com.localsoft.controle_visitas
 
 import android.os.Bundle
 
