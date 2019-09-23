@@ -4,6 +4,8 @@ import 'package:controle_visitas/models/citizen.dart';
 import 'package:controle_visitas/utils/citizen_helper.dart';
 import 'package:intl/intl.dart';
 
+import 'package:flutter/cupertino.dart';
+
 class CitizenDetail extends StatefulWidget {
   final String appBarTitle;
   final Citizen citizen;
@@ -18,17 +20,11 @@ class CitizenDetail extends StatefulWidget {
 
 class CitizenDetailState extends State<CitizenDetail> {
   static var _priorities = ['Não visitada', 'Visitada'];
-
+  // bool _isResposability = false;
   CitizenHelper helper = CitizenHelper();
 
   String appBarTitle;
   Citizen citizen;
-
-  bool switchOn = false;
-
-  void _onSwitchChanged(bool value) {
-    switchOn = false;
-  }
 
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -38,10 +34,14 @@ class CitizenDetailState extends State<CitizenDetail> {
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
-    bool _isResposability = false;
 
     nameController.text = citizen.name;
     descriptionController.text = citizen.dateNyver.toString();
+    debugPrint(citizen.responsability.toString());
+    // _isResposability =
+    //     (citizen.responsability == 0 || citizen.responsability == null)
+    //         ? true
+    //         : false;
 
     return WillPopScope(
         onWillPop: () {
@@ -79,16 +79,27 @@ class CitizenDetailState extends State<CitizenDetail> {
                         });
                       }),
                 ),
-                new CheckboxListTile(
-                  value: _isResposability,
-                  onChanged: (bool newValue) {
-                    setState(() {
-                      print(newValue);
-                      _isResposability = newValue;
-                      citizen.responsability = newValue? 0 : 1;
-                    });
-                  },
-                  title: Text('Responsavel', style: new TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                Padding(
+                  padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  child: ListTile(
+                    title: Text('Responsavel'),
+                    trailing: CupertinoSwitch(
+                      value: (citizen.responsability==0 || citizen.responsability==null)? false:true,
+                      onChanged: (bool value) {
+                        setState(() {
+                          debugPrint(value.toString());
+                          citizen.responsability = (value)? 1: 0;
+                          debugPrint(citizen.responsability.toString());
+                          // _isResposability = value;
+                        });
+                      },
+                    ),
+                    // onTap: () {
+                    //   setState(() {
+                    //     citizen.responsability = (_isResposability) ? 1 : 0;
+                    //   });
+                    // },
+                  ),
                 ),
                 // Second Element
                 Padding(

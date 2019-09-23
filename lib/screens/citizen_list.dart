@@ -44,7 +44,7 @@ class CitizenListState extends State<CitizenList> {
 		      navigateToDetail(Citizen(homeIdent, '', '',0, 0), 'Add Cidadão');
 		    },
 
-		    tooltip: 'Add Citizen',
+		    tooltip: 'Add Cidadão',
 
 		    child: Icon(Icons.add),
 

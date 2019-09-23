@@ -40,7 +40,7 @@ class RuaListState extends State<RuaList> {
   List<Rua> ruaList;
   int count = 0;
   // This is the type used by the popup menu below.
-  CustomPopupMenu _selectedChoices = choices[0];
+  // CustomPopupMenu _selectedChoices = choices[0];
 
   @override
   Widget build(BuildContext context) {
@@ -63,29 +63,6 @@ class RuaListState extends State<RuaList> {
               databaseHelper.deleteDB();
             },
           ),
-          // overflow menu
-          PopupMenuButton<CustomPopupMenu>(
-            // elevation: 3.2,
-            initialValue: choices[1],
-            onCanceled: () {
-              print('Cancelado');
-            },
-            tooltip: 'This is tooltip',
-            onSelected: (CustomPopupMenu choice) {
-              setState(() {
-                if(choice.title=='1'){}
-                _selectedChoices = choice;
-              });
-            },
-            itemBuilder: (BuildContext context) {
-              return choices.map((CustomPopupMenu choice) {
-                return PopupMenuItem<CustomPopupMenu>(
-                  value: choice,
-                  child: Text(choice.title),
-                );
-              }).toList();
-            },
-          )
         ],
       ),
       body: getRuaListView(),

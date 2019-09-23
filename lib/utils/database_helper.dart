@@ -40,7 +40,7 @@ class DatabaseHelper {
   Future<Database> deleteDB() async {
     debugPrint('Creating tables');
     var visitasDatabase =
-        await openDatabase(await path(), version: 1, onCreate: _deleteDb);
+        await openDatabase(await path(), version: 1, onCreate: _createDb);
     return visitasDatabase;
   }
   Future<String> path() async{
@@ -48,9 +48,6 @@ class DatabaseHelper {
     Directory directory = await getApplicationDocumentsDirectory();
     String _path = directory.path + '/visitas.db';
     return _path;
-  }
-  static void _deleteDb(Database db, int newVersion) async {    
- 		await db.execute('DROP TABLE IF EXISTS home_table');
   }
   static void _createDb(Database db, int newVersion) async {    
     // List<Map<String, dynamic>> checkColumn = await db.query('PRAGMA table_info(rua_table)');
@@ -63,11 +60,12 @@ class DatabaseHelper {
        'visited INTEGER, '+
        'date_visited TEXT, '+
        'priority INTEGER)');
- 		// await db.execute('DROP TABLE IF EXISTS citizen_table');
+       print('drop table');
+ 		await db.rawDelete('DROP TABLE IF EXISTS citizen_table');
  		await db.execute('CREATE TABLE IF NOT EXISTS citizen_table ('+
        'id INTEGER PRIMARY KEY AUTOINCREMENT, '+
        'id_casa INTEGER, '+
-       'responsability BYTE, '+
+       'responsability INTEGER, '+
        'name TEXT, '+ 
        'date_nyver TEXT, '+
        'priority INTEGER)');
