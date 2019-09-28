@@ -1,10 +1,12 @@
-// import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:controle_visitas/models/citizen.dart';
 import 'package:controle_visitas/utils/citizen_helper.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:controle_visitas/material/radio_button_group.dart';
+import 'package:controle_visitas/material/grouped_buttons_orientation.dart';
+import 'package:controle_visitas/material/chip.dart';
 
 class CitizenDetail extends StatefulWidget {
   final String appBarTitle;
@@ -19,8 +21,8 @@ class CitizenDetail extends StatefulWidget {
 }
 
 class CitizenDetailState extends State<CitizenDetail> {
-  static var _priorities = ['Não visitada', 'Visitada'];
-  // bool _isResposability = false;
+  String _picked = 'Masculino';
+
   CitizenHelper helper = CitizenHelper();
 
   String appBarTitle;
@@ -29,20 +31,25 @@ class CitizenDetailState extends State<CitizenDetail> {
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
+  // Objeto do Citizen
   CitizenDetailState(this.citizen, this.appBarTitle);
+
+  // Valores do check da saude
+  bool _isSelected=false;
+  final List<String> saude = <String>[
+    'Gestante',
+    'Diabetes',
+    'Hipertensão',
+    'Acamado/domiciliado',
+  ];
 
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
-
-    nameController.text = citizen.name;
-    descriptionController.text = citizen.dateNyver.toString();
-    debugPrint(citizen.responsability.toString());
-    // _isResposability =
-    //     (citizen.responsability == 0 || citizen.responsability == null)
-    //         ? true
-    //         : false;
-
+    final List<Widget> tiles = <Widget>[
+      const SizedBox(height: 8.0, width: 0.0),
+      ChipsTile(label: 'Choose Tools (FilterChip)', defaultTools: saude,),
+    ];
     return WillPopScope(
         onWillPop: () {
           // Write some code to control things, when user press Back navigation button in device navigationBar
@@ -62,80 +69,101 @@ class CitizenDetailState extends State<CitizenDetail> {
             padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
             child: ListView(
               children: <Widget>[
+                /** SE RESPONSAVEL */
                 ListTile(
-                  title: DropdownButton(
-                      items: _priorities.map((String dropDownStringItem) {
-                        return DropdownMenuItem<String>(
-                          value: dropDownStringItem,
-                          child: Text(dropDownStringItem),
-                        );
-                      }).toList(),
-                      style: textStyle,
-                      value: getPriorityAsString(citizen.priority),
-                      onChanged: (valueSelectedByUser) {
-                        setState(() {
-                          debugPrint('User selected $valueSelectedByUser');
-                          updatePriorityAsInt(valueSelectedByUser);
-                        });
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  child: ListTile(
-                    title: Text('Responsavel'),
-                    trailing: CupertinoSwitch(
-                      value: (citizen.responsability==0 || citizen.responsability==null)? false:true,
-                      onChanged: (bool value) {
-                        setState(() {
-                          debugPrint(value.toString());
-                          citizen.responsability = (value)? 1: 0;
-                          debugPrint(citizen.responsability.toString());
-                          // _isResposability = value;
-                        });
-                      },
-                    ),
-                    // onTap: () {
-                    //   setState(() {
-                    //     citizen.responsability = (_isResposability) ? 1 : 0;
-                    //   });
-                    // },
+                  title: Text('Responsavel'),
+                  trailing: CupertinoSwitch(
+                    value: (citizen.responsability == 0 ||
+                            citizen.responsability == null)
+                        ? false
+                        : true,
+                    onChanged: (bool value) {
+                      setState(() {
+                        debugPrint(value.toString());
+                        citizen.responsability = (value) ? 1 : 0;
+                        debugPrint(citizen.responsability.toString());
+                        // _isResposability = value;
+                      });
+                    },
                   ),
                 ),
-                // Second Element
+                /** NOME */
                 Padding(
-                  padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                   child: TextField(
                     controller: nameController,
                     style: textStyle,
                     onChanged: (value) {
-                      debugPrint('Something changed in Title Text Field');
-                      updateTitle();
+                      citizen.name = value;
                     },
                     decoration: InputDecoration(
-                        labelText: 'Title',
+                        labelText: 'Nome',
                         labelStyle: textStyle,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0))),
                   ),
                 ),
-                // Third Element
+                /** SEXO */
                 Padding(
-                  padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                  child: RadioButtonGroup(
+                    orientation: GroupedButtonsOrientation.HORIZONTAL,
+                    margin: const EdgeInsets.only(left: 1.0),
+                    onSelected: (String selected) => setState(() {
+                      _picked = selected;
+                    }),
+                    labels: <String>[
+                      "Masculino",
+                      "Feminino",
+                    ],
+                    picked: _picked,
+                    itemBuilder: (Radio rb, Text txt, int i) {
+                      return Row(
+                        children: <Widget>[
+                          // Icon(Icons.public),
+                          rb,
+                          txt,
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                /** SUS */
+                Padding(
+                  padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                   child: TextField(
                     controller: descriptionController,
                     style: textStyle,
                     onChanged: (value) {
                       debugPrint('Something changed in Description Text Field');
-                      updateDescription();
+                      citizen.sus = value;
                     },
                     decoration: InputDecoration(
-                        labelText: 'Description',
+                        labelText: 'SUS',
                         labelStyle: textStyle,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0))),
                   ),
                 ),
-                // Fourth Element
+                /** NASCIMENTO */
+                Padding(
+                  padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                  child: TextField(
+                    controller: descriptionController,
+                    style: textStyle,
+                    onChanged: (value) {
+                      citizen.dateNyver = value;
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Data de nascimento',
+                        labelStyle: textStyle,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                  ),
+                ),
+                /** SAUDE */
+                // ListView(children: tiles),
+                /**  Bottom SAVE/CANCEL */
                 Padding(
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: Row(
@@ -198,30 +226,6 @@ class CitizenDetailState extends State<CitizenDetail> {
         citizen.priority = 2;
         break;
     }
-  }
-
-  // Convert int priority to String priority and display it to user in DropDown
-  String getPriorityAsString(int value) {
-    String priority;
-    switch (value) {
-      case 1:
-        priority = _priorities[0]; // 'High'
-        break;
-      case 2:
-        priority = _priorities[1]; // 'Low'
-        break;
-    }
-    return priority;
-  }
-
-  // Update the name of Citizen object
-  void updateTitle() {
-    citizen.name = nameController.text;
-  }
-
-  // Update the description of Citizen object
-  void updateDescription() {
-    citizen.dateNyver = descriptionController.text;
   }
 
   // Save data to database

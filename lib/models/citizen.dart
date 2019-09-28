@@ -4,17 +4,19 @@ class Citizen {
 	int _id;
 	int _idCasa;
 	String _name;
+  String _sus;
 	String _dateNyver;
   int _responsability;
 	int _priority;
 
-	Citizen(this._idCasa, this._name, this._dateNyver, int _responsability, this._priority);
+	Citizen(this._idCasa, this._name, this._sus, this._dateNyver, int _responsability, this._priority);
 
-	Citizen.withId(this._id, this._idCasa, this._name, this._dateNyver, int _responsability, this._priority);
+	Citizen.withId(this._id, this._idCasa, this._name, this._sus, this._dateNyver, int _responsability, this._priority);
 
 	int get id => _id;
 	int get idCasa => _idCasa;
 	String get name => _name;
+  String get sus => _sus;
 	String get dateNyver => _dateNyver;
   int get responsability => _responsability;
 	int get priority => _priority;
@@ -26,6 +28,11 @@ class Citizen {
 	set name(String newName) {
 		if (newName.length <= 255) {
 			this._name = newName;
+		}
+	}
+	set sus(String newSus) {
+		if (newSus.length <= 255) {
+			this._name = newSus;
 		}
 	}
 

@@ -20,7 +20,7 @@ class HomeDetail extends StatefulWidget {
 
 class HomeDetailState extends State<HomeDetail> {
 
-	static var _priorities = ['Não visitada', 'Visitada'];
+	static var _priorities = ['Casa não visitada', 'Casa Visitada'];
 
 	HomeHelper helper = HomeHelper();
 
