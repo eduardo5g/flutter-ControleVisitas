@@ -1,3 +1,4 @@
+import 'package:controle_visitas/material/simple_list.dart';
 import 'package:flutter/material.dart';
 import 'package:controle_visitas/models/citizen.dart';
 import 'package:controle_visitas/utils/citizen_helper.dart';
@@ -35,21 +36,45 @@ class CitizenDetailState extends State<CitizenDetail> {
   CitizenDetailState(this.citizen, this.appBarTitle);
 
   // Valores do check da saude
-  bool _isSelected=false;
   final List<String> saude = <String>[
     'Gestante',
     'Diabetes',
     'Hipertensão',
     'Acamado/domiciliado',
+    'HIV',
+    'Tuberculose',
+    'Hanseniase',
+    'Cancer',
+  ];
+  List<bool> saudeValue = <bool>[
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
   ];
 
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.title;
-    final List<Widget> tiles = <Widget>[
-      const SizedBox(height: 8.0, width: 0.0),
-      ChipsTile(label: 'Choose Tools (FilterChip)', defaultTools: saude,),
-    ];
+    final List<Widget> filterChips = saude.map<Widget>((String name) {
+      return FilterChip(
+        key: ValueKey<String>(name),
+        label: Text(name),
+        backgroundColor: Colors.redAccent,
+        selectedColor: Colors.greenAccent,
+        shape: StadiumBorder(side: BorderSide()),
+        selected: saudeValue[0],
+        onSelected: (bool value) {
+          setState(() {
+            saudeValue[0] = value;
+          });
+        },
+      );
+    }).toList();
     return WillPopScope(
         onWillPop: () {
           // Write some code to control things, when user press Back navigation button in device navigationBar
@@ -162,7 +187,7 @@ class CitizenDetailState extends State<CitizenDetail> {
                   ),
                 ),
                 /** SAUDE */
-                // ListView(children: tiles),
+                ChipsTile(label: 'Saúde',children: filterChips),
                 /**  Bottom SAVE/CANCEL */
                 Padding(
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
