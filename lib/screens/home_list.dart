@@ -30,7 +30,6 @@ class HomeListState extends State<HomeList> {
 		}
 
     return Scaffold(
-
 	    appBar: AppBar(
 		    title: Text('Casas'),
 	    ),
@@ -42,18 +41,14 @@ class HomeListState extends State<HomeList> {
 		      debugPrint('FAB clicked');
 		      navigateToDetail(Home(ruaIdent, '', 0,'', 0), 'Add Casa');
 		    },
-
 		    tooltip: 'Add Home',
-
 		    child: Icon(Icons.add),
-
 	    ),
     );
   }
 
   ListView getHomeListView() {
-    
-		TextStyle nameStyle = Theme.of(context).textTheme.subhead;
+    		TextStyle nameStyle = Theme.of(context).textTheme.subhead;
 
 		return ListView.builder(
 			itemCount: count,

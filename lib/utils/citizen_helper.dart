@@ -1,5 +1,4 @@
 import 'package:controle_visitas/utils/database_helper.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:controle_visitas/models/citizen.dart';
@@ -66,7 +65,6 @@ class CitizenHelper {
     idCasa = id;
     var citizenMapList =
         await getCitizenMapList(idCasa, responsability); // Get 'Map List' from database
-    debugPrint(citizenMapList.toString());
     int count = citizenMapList.length; // Count the number of map entries in db table
 
     List<Citizen> citizenList = List<Citizen>();

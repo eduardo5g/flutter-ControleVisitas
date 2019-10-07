@@ -191,6 +191,7 @@ class RuaListState extends State<RuaList> {
   void updateListView() {
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
     dbFuture.then((database) {
+      databaseHelper.createDb(database, 2);
       Future<List<Rua>> ruaListFuture = ruaHelper.getRuaList();
       ruaListFuture.then((ruaList) {
         setState(() {

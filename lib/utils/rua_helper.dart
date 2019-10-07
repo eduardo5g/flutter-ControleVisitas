@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:controle_visitas/models/rua.dart';
@@ -58,7 +57,7 @@ class RuaHelper {
 		var ruaMapList = await getRuaMapList(); // Get 'Map List' from database
 		int count = ruaMapList.length;         // Count the number of map entries in db table
 
-    debugPrint(ruaMapList.toString());
+    // debugPrint(ruaMapList.toString());
 		List<Rua> ruaList = List<Rua>();
 		// For loop to create a 'Rua List' from a 'Map List'
 		for (int i = 0; i < count; i++) {

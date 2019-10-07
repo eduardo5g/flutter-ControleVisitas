@@ -1,13 +1,20 @@
-import 'package:controle_visitas/material/simple_list.dart';
+// import 'package:controle_visitas/material/simple_list.dart';
 import 'package:flutter/material.dart';
-import 'package:controle_visitas/models/citizen.dart';
-import 'package:controle_visitas/utils/citizen_helper.dart';
 import 'package:intl/intl.dart';
-
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/cupertino.dart';
+
+/** DATABASES */
+import 'package:controle_visitas/utils/database_helper.dart';
+import 'package:controle_visitas/utils/citizen_helper.dart';
+import 'package:controle_visitas/utils/saude_helper.dart';
+/** MODELS */
+import 'package:controle_visitas/models/citizen.dart';
+import 'package:controle_visitas/models/saude.dart';
+/** CONTROLS */
+import 'package:controle_visitas/material/chip.dart';
 import 'package:controle_visitas/material/radio_button_group.dart';
 import 'package:controle_visitas/material/grouped_buttons_orientation.dart';
-import 'package:controle_visitas/material/chip.dart';
 
 class CitizenDetail extends StatefulWidget {
   final String appBarTitle;
@@ -22,55 +29,64 @@ class CitizenDetail extends StatefulWidget {
 }
 
 class CitizenDetailState extends State<CitizenDetail> {
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  CitizenHelper citizenHelper = CitizenHelper();
+  SaudeHelper saudeHelper = SaudeHelper();
+
+  Citizen citizen;
+  int citizenIdent;
+
   String _picked = 'Masculino';
 
-  CitizenHelper helper = CitizenHelper();
-
   String appBarTitle;
-  Citizen citizen;
 
   TextEditingController nameController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
+  TextEditingController susController = TextEditingController();
+  TextEditingController nascimentoController = TextEditingController();
 
   // Objeto do Citizen
   CitizenDetailState(this.citizen, this.appBarTitle);
 
   // Valores do check da saude
-  final List<String> saude = <String>[
-    'Gestante',
-    'Diabetes',
-    'Hipertensão',
-    'Acamado/domiciliado',
-    'HIV',
-    'Tuberculose',
-    'Hanseniase',
-    'Cancer',
-  ];
-  List<bool> saudeValue = <bool>[
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
+  List<Saude> saudeList;
+  List<bool> saudeValue;
 
   @override
   Widget build(BuildContext context) {
+    if (citizen == null) getCitizen();
+
+    susController.text = citizen.sus;
+    nascimentoController.text = citizen.dateNyver;
     TextStyle textStyle = Theme.of(context).textTheme.title;
-    final List<Widget> filterChips = saude.map<Widget>((String name) {
+
+    if (saudeList == null) {
+      saudeList = List<Saude>();
+      updateListView();
+    }
+    String cAvatarT = '';
+    Color cAvatarC = Colors.transparent;
+    final List<Widget> filterChips = saudeList.map<Widget>((Saude s) {
       return FilterChip(
-        key: ValueKey<String>(name),
-        label: Text(name),
+        avatar: CircleAvatar(
+          child: Text(cAvatarT),
+          backgroundColor: cAvatarC,
+        ),
+        key: ValueKey<int>(s.id - 1),
+        label: Text(s.name),
         backgroundColor: Colors.redAccent,
         selectedColor: Colors.greenAccent,
         shape: StadiumBorder(side: BorderSide()),
-        selected: saudeValue[0],
+        selected: saudeValue[s.id - 1],
         onSelected: (bool value) {
           setState(() {
-            saudeValue[0] = value;
+            // if (value) {
+            //   cAvatarT = '';
+            //   cAvatarC = Colors.transparent;
+            // } else {
+            //   cAvatarT = 'X';
+            //   cAvatarC = Colors.redAccent;
+            // }
+            saudeValue[s.id - 1] = value;
           });
         },
       );
@@ -104,10 +120,7 @@ class CitizenDetailState extends State<CitizenDetail> {
                         : true,
                     onChanged: (bool value) {
                       setState(() {
-                        debugPrint(value.toString());
                         citizen.responsability = (value) ? 1 : 0;
-                        debugPrint(citizen.responsability.toString());
-                        // _isResposability = value;
                       });
                     },
                   ),
@@ -157,10 +170,9 @@ class CitizenDetailState extends State<CitizenDetail> {
                 Padding(
                   padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                   child: TextField(
-                    controller: descriptionController,
+                    controller: susController,
                     style: textStyle,
                     onChanged: (value) {
-                      debugPrint('Something changed in Description Text Field');
                       citizen.sus = value;
                     },
                     decoration: InputDecoration(
@@ -174,7 +186,7 @@ class CitizenDetailState extends State<CitizenDetail> {
                 Padding(
                   padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                   child: TextField(
-                    controller: descriptionController,
+                    controller: nascimentoController,
                     style: textStyle,
                     onChanged: (value) {
                       citizen.dateNyver = value;
@@ -187,7 +199,7 @@ class CitizenDetailState extends State<CitizenDetail> {
                   ),
                 ),
                 /** SAUDE */
-                ChipsTile(label: 'Saúde',children: filterChips),
+                ChipsTile(label: 'Saúde', children: filterChips),
                 /**  Bottom SAVE/CANCEL */
                 Padding(
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
@@ -198,7 +210,7 @@ class CitizenDetailState extends State<CitizenDetail> {
                           color: Theme.of(context).primaryColorDark,
                           textColor: Theme.of(context).primaryColorLight,
                           child: Text(
-                            'Save',
+                            'Salvar',
                             textScaleFactor: 1.5,
                           ),
                           onPressed: () {
@@ -217,13 +229,13 @@ class CitizenDetailState extends State<CitizenDetail> {
                           color: Theme.of(context).primaryColorDark,
                           textColor: Theme.of(context).primaryColorLight,
                           child: Text(
-                            'Delete',
+                            'Cancelar',
                             textScaleFactor: 1.5,
                           ),
                           onPressed: () {
                             setState(() {
                               debugPrint("Delete button clicked");
-                              _delete();
+                              _cancel();
                             });
                           },
                         ),
@@ -258,13 +270,24 @@ class CitizenDetailState extends State<CitizenDetail> {
     moveToLastScreen();
 
     citizen.dateNyver = DateFormat.yMMMd().format(DateTime.now());
+    String _saude;
+    for (int i = 0; i <= saudeValue.length-1; i++) {
+      if (saudeValue[i]) {
+        if (_saude.length > 1) _saude = ',';
+        citizen.saude = saudeList[i].id.toString();
+      }
+    }
+    citizen.saude = _saude;
+
     int result;
     if (citizen.id != null) {
       // Case 1: Update operation
-      result = await helper.updateCitizen(citizen);
+      debugPrint(citizen.toString());
+      result = await citizenHelper.updateCitizen(citizen);
+      debugPrint(result.toString());
     } else {
       // Case 2: Insert Operation
-      result = await helper.insertCitizen(citizen);
+      result = await citizenHelper.insertCitizen(citizen);
     }
 
     if (result != 0) {
@@ -276,23 +299,8 @@ class CitizenDetailState extends State<CitizenDetail> {
     }
   }
 
-  void _delete() async {
+  void _cancel() async {
     moveToLastScreen();
-
-    // Case 1: If user is trying to delete the NEW NOTE i.e. he has come to
-    // the detail page by pressing the FAB of CitizenList page.
-    if (citizen.id == null) {
-      _showAlertDialog('Status', 'No Citizen was deleted');
-      return;
-    }
-
-    // Case 2: User is trying to delete the old citizen that already has a valid ID.
-    int result = await helper.deleteCitizen(citizen.id);
-    if (result != 0) {
-      _showAlertDialog('Status', 'Citizen Deleted Successfully');
-    } else {
-      _showAlertDialog('Status', 'Error Occured while Deleting Citizen');
-    }
   }
 
   void _showAlertDialog(String name, String message) {
@@ -301,5 +309,48 @@ class CitizenDetailState extends State<CitizenDetail> {
       content: Text(message),
     );
     showDialog(context: context, builder: (_) => alertDialog);
+  }
+
+  void getCitizen() {
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+    dbFuture.then((database) {
+      Future<List<Citizen>> _listCitizen =
+          citizenHelper.getCitizenList(citizenIdent);
+      _listCitizen.then((_citizen) {
+        setState(() {
+          debugPrint('*********' + _citizen.toString());
+
+          this.citizen = _citizen[0];
+        });
+      });
+    });
+  }
+
+  void updateListView() {
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+    dbFuture.then((database) {
+      Future<List<Saude>> saudeListFuture = saudeHelper.getSaudeList();
+      saudeListFuture.then((saudeList) {
+        setState(() {
+          debugPrint(saudeList.toString());
+          if (saudeList.length > 1) {
+            this.saudeList = saudeList;
+            /** CARREGAR ESTADO DE SAUDE */
+            this.saudeValue =
+                List<bool>.filled(saudeList.length, false, growable: true);
+          } else {
+            saudeHelper.insertSaude(Saude('Gestante'));
+            saudeHelper.insertSaude(Saude('Diabetes'));
+            saudeHelper.insertSaude(Saude('Hipertensão'));
+            saudeHelper.insertSaude(Saude('Domicialiado/Acamado'));
+            saudeHelper.insertSaude(Saude('Tuberculose'));
+            saudeHelper.insertSaude(Saude('HIV'));
+            saudeHelper.insertSaude(Saude('Cancer'));
+            saudeHelper.insertSaude(Saude('Obeso'));
+            this.updateListView();
+          }
+        });
+      });
+    });
   }
 }

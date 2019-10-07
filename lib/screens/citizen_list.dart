@@ -36,10 +36,11 @@ class CitizenListState extends State<CitizenList> {
         title: Text('Moradores'),
       ),
       body: getCitizenListView(),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           debugPrint('FAB clicked');
-          navigateToDetail(Citizen(homeIdent, '', '', '' , 0, 0), 'Add Cidadão');
+          navigateToDetail(Citizen(homeIdent, '', '', '', '', 0, 0), 'Add Cidadão');
         },
         tooltip: 'Add Cidadão',
         child: Icon(Icons.add),
@@ -96,7 +97,6 @@ class CitizenListState extends State<CitizenList> {
               ],
             ),
             onTap: () {
-              debugPrint("ListTile Tapped");
               navigateToDetail(this.citizenList[position], 'Edit Citizen');
             },
           ),

@@ -9,7 +9,7 @@ class HomeDetail extends StatefulWidget {
 	final String appBarTitle;
 	final Home home;
 
-	HomeDetail(this. home, this.appBarTitle);
+	HomeDetail(this.home, this.appBarTitle);
 
 	@override
   State<StatefulWidget> createState() {

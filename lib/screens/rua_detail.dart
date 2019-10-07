@@ -94,7 +94,6 @@ class RuaDetailState extends State<RuaDetail> {
 						    controller: nameController,
 						    style: textStyle,
 						    onChanged: (value) {
-						    	debugPrint('Something changed in Title Text Field');
 						    	updateTitle();
 						    },
 						    decoration: InputDecoration(

@@ -32,15 +32,15 @@ class DatabaseHelper {
     //   Directory(path).deleteSync(recursive: true);
     // }
     // Open/create the database at a given path
-    debugPrint('Creating tables');
+    debugPrint('Creating tables :: database_helper->35');
     var visitasDatabase =
-        await openDatabase(await path(), version: 1, onCreate: _createDb);
+        await openDatabase(await path(), version: 2, onCreate: createDb);
     return visitasDatabase;
   }
   Future<Database> deleteDB() async {
-    debugPrint('Creating tables');
+    debugPrint('Creating tables :: database_helper->41');
     var visitasDatabase =
-        await openDatabase(await path(), version: 1, onCreate: _createDb);
+        await openDatabase(await path(), version: 1, onCreate: createDb);
     return visitasDatabase;
   }
   Future<String> path() async{
@@ -49,9 +49,10 @@ class DatabaseHelper {
     String _path = directory.path + '/visitas.db';
     return _path;
   }
-  static void _createDb(Database db, int newVersion) async {    
+   void createDb(Database db, int newVersion) async {    
     // List<Map<String, dynamic>> checkColumn = await db.query('PRAGMA table_info(rua_table)');
     // debugPrint( checkColumn.toString());
+    debugPrint('Creating tables :: database_helper->55');
     await db.execute('CREATE TABLE IF NOT EXISTS rua_table (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, priority INTEGER)');
  		await db.execute('CREATE TABLE IF NOT EXISTS home_table ('+
        'id INTEGER PRIMARY KEY AUTOINCREMENT, '+
@@ -60,14 +61,18 @@ class DatabaseHelper {
        'visited INTEGER, '+
        'date_visited TEXT, '+
        'priority INTEGER)');
-       print('drop table');
- 		await db.rawDelete('DROP TABLE IF EXISTS citizen_table');
+    // print('drop table');
+ 		// await db.rawDelete('DROP TABLE IF EXISTS citizen_table');
  		await db.execute('CREATE TABLE IF NOT EXISTS citizen_table ('+
        'id INTEGER PRIMARY KEY AUTOINCREMENT, '+
        'id_casa INTEGER, '+
        'responsability INTEGER, '+
        'name TEXT, '+ 
        'date_nyver TEXT, '+
+       'saude TEXT, '+
        'priority INTEGER)');
+    await db.execute('CREATE TABLE IF NOT EXISTS saude_table (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
+    debugPrint('Creating tables :: database_helper->75');
+
   }
 }
