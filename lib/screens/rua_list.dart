@@ -60,7 +60,11 @@ class RuaListState extends State<RuaList> {
               color: Colors.white,
             ),
             onPressed: () {
-              databaseHelper.deleteDB();
+              final Future<Database> dbFuture =
+                  databaseHelper.initializeDatabase();
+              dbFuture.then((database) {
+                databaseHelper.deleteDB(database, 'citizen_table');
+              });
             },
           ),
         ],
@@ -105,18 +109,23 @@ class RuaListState extends State<RuaList> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                GestureDetector(
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.grey,
+                Padding(
+                  padding: const EdgeInsets.only(right:5),
+                  child: GestureDetector(
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.grey,
+                    ),
+                    onTap: () {
+                      debugPrint("Edit Rua: " + this.ruaList[position].name);
+                      navigateToDetail(
+                          this.ruaList[position], this.ruaList[position].name);
+                    },
                   ),
-                  onTap: () {
-                    debugPrint("Edit Rua: " + this.ruaList[position].name);
-                    navigateToDetail(
-                        this.ruaList[position], this.ruaList[position].name);
-                  },
                 ),
-                GestureDetector(
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: GestureDetector(
                   child: Icon(
                     Icons.delete,
                     color: Colors.grey,
@@ -125,6 +134,7 @@ class RuaListState extends State<RuaList> {
                     debugPrint("Delete Rua: " + this.ruaList[position].name);
                     _delete(context, ruaList[position]);
                   },
+                ),
                 ),
               ],
             ),

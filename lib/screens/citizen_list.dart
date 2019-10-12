@@ -1,5 +1,4 @@
 import 'dart:async';
-// import 'package:controle_visitas/screens/home_list.dart';
 import 'package:controle_visitas/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:controle_visitas/models/citizen.dart';
@@ -36,11 +35,11 @@ class CitizenListState extends State<CitizenList> {
         title: Text('Moradores'),
       ),
       body: getCitizenListView(),
-      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           debugPrint('FAB clicked');
-          navigateToDetail(Citizen(homeIdent, '', '', '', '', 0, 0), 'Add Cidadão');
+          navigateToDetail(
+              Citizen(homeIdent, '', '', '', '', '', '', '', 0, 0), 'Add Cidadão');
         },
         tooltip: 'Add Cidadão',
         child: Icon(Icons.add),
@@ -71,33 +70,40 @@ class CitizenListState extends State<CitizenList> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                GestureDetector(
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.grey,
+                Padding(
+                  padding: const EdgeInsets.only(right: 5),
+                  child: GestureDetector(
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.grey,
+                    ),
+                    onTap: () {
+                      debugPrint(
+                          "Edit casa: " + this.citizenList[position].name);
+                      navigateToDetail(this.citizenList[position],
+                          this.citizenList[position].name);
+                    },
                   ),
-                  onTap: () {
-                    debugPrint(
-                        "Edit casa: " + this.citizenList[position].name);
-                    navigateToDetail(this.citizenList[position],
-                        this.citizenList[position].name);
-                  },
                 ),
-                GestureDetector(
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.grey,
+                Padding(
+                  padding: const EdgeInsets.only(right: 5),
+                  child: GestureDetector(
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.grey,
+                    ),
+                    onTap: () {
+                      debugPrint(
+                          "Delete casa: " + this.citizenList[position].name);
+                      _delete(context, citizenList[position]);
+                    },
                   ),
-                  onTap: () {
-                    debugPrint(
-                        "Delete casa: " + this.citizenList[position].name);
-                    _delete(context, citizenList[position]);
-                  },
                 ),
               ],
             ),
             onTap: () {
-              navigateToDetail(this.citizenList[position], 'Edit Citizen');
+              _showSnackBar(context, 'Form para visitas');
+              // navigateToDetail(this.citizenList[position], 'Edit Citizen');
             },
           ),
         );

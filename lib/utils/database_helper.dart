@@ -28,20 +28,14 @@ class DatabaseHelper {
   }
 
   Future<Database> initializeDatabase() async {
-    // if (await File(path).exists()){
-    //   Directory(path).deleteSync(recursive: true);
-    // }
-    // Open/create the database at a given path
-    debugPrint('Creating tables :: database_helper->35');
     var visitasDatabase =
         await openDatabase(await path(), version: 2, onCreate: createDb);
     return visitasDatabase;
   }
-  Future<Database> deleteDB() async {
-    debugPrint('Creating tables :: database_helper->41');
-    var visitasDatabase =
-        await openDatabase(await path(), version: 1, onCreate: createDb);
-    return visitasDatabase;
+  void deleteDB(Database db, String _table) async {
+    debugPrint('Delete tables :: database_helper->41');
+    await db.execute('DROP TABLE IF EXISTS $_table');
+
   }
   Future<String> path() async{
     // Get the directory path for both Android and iOS to store database.
@@ -68,11 +62,22 @@ class DatabaseHelper {
        'id_casa INTEGER, '+
        'responsability INTEGER, '+
        'name TEXT, '+ 
+       'sus TEXT, '+ 
        'date_nyver TEXT, '+
        'saude TEXT, '+
        'priority INTEGER)');
+       addColumn(db, 'citizen_table', 'pai', 'TEXT');
+       addColumn(db, 'citizen_table', 'mae', 'TEXT');
     await db.execute('CREATE TABLE IF NOT EXISTS saude_table (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
-    debugPrint('Creating tables :: database_helper->75');
-
+  }
+  void addColumn(Database _db, String _table, String _sColumn, String _dataType) async{
+    await _db.execute('ALTER TABLE $_table ADD $_sColumn $_dataType');
+  }
+  // Invalid in  SQLITE
+  // void dellColumn(Database _db, String _table, String _column) async{
+  //   await _db.execute('ALTER TABLE $_table DROP COLUMN $_column');
+  // }
+  void dataTypeColumn(Database _db, String _table, String _oldColumn, String _newColumn) async{
+    await _db.execute('ALTER TABLE $_table RENAME COLUMN $_oldColumn TO _newColumn');
   }
 }

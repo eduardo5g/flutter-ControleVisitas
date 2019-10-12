@@ -37,6 +37,7 @@ class CitizenHelper {
 
   // Update Operation: Update a Citizen object and save it to database
   Future<int> updateCitizen(Citizen citizen) async {
+    print('Citizen detail->57::' + citizen.toMap().toString());
     var db = await dbHelper.database;
     var result = await db.update(citizenTable, citizen.toMap(),
         where: '$colId = ?', whereArgs: [citizen.id]);

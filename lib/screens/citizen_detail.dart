@@ -1,9 +1,9 @@
 // import 'package:controle_visitas/material/simple_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/cupertino.dart';
-
 /** DATABASES */
 import 'package:controle_visitas/utils/database_helper.dart';
 import 'package:controle_visitas/utils/citizen_helper.dart';
@@ -15,6 +15,7 @@ import 'package:controle_visitas/models/saude.dart';
 import 'package:controle_visitas/material/chip.dart';
 import 'package:controle_visitas/material/radio_button_group.dart';
 import 'package:controle_visitas/material/grouped_buttons_orientation.dart';
+
 
 class CitizenDetail extends StatefulWidget {
   final String appBarTitle;
@@ -42,7 +43,11 @@ class CitizenDetailState extends State<CitizenDetail> {
 
   TextEditingController nameController = TextEditingController();
   TextEditingController susController = TextEditingController();
+  TextEditingController maeController = TextEditingController();
+  TextEditingController paiController = TextEditingController();
+
   TextEditingController nascimentoController = TextEditingController();
+  DateTime dateNyver = DateTime.now();
 
   // Objeto do Citizen
   CitizenDetailState(this.citizen, this.appBarTitle);
@@ -54,9 +59,13 @@ class CitizenDetailState extends State<CitizenDetail> {
   @override
   Widget build(BuildContext context) {
     if (citizen == null) getCitizen();
-
+    nameController.text = citizen.name;
     susController.text = citizen.sus;
-    nascimentoController.text = citizen.dateNyver;
+    maeController.text = citizen.mae;
+    paiController.text = citizen.pai;
+    if( DateTime.tryParse(citizen.dateNyver)!=null)
+    dateNyver = DateTime.parse(citizen.dateNyver);
+    _picked = citizen.sexo;
     TextStyle textStyle = Theme.of(context).textTheme.title;
 
     if (saudeList == null) {
@@ -149,6 +158,7 @@ class CitizenDetailState extends State<CitizenDetail> {
                     margin: const EdgeInsets.only(left: 1.0),
                     onSelected: (String selected) => setState(() {
                       _picked = selected;
+                      citizen.sexo = _picked;
                     }),
                     labels: <String>[
                       "Masculino",
@@ -170,6 +180,8 @@ class CitizenDetailState extends State<CitizenDetail> {
                 Padding(
                   padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                   child: TextField(
+                    keyboardType: TextInputType.number,
+                    maxLength: 15,
                     controller: susController,
                     style: textStyle,
                     onChanged: (value) {
@@ -183,16 +195,34 @@ class CitizenDetailState extends State<CitizenDetail> {
                   ),
                 ),
                 /** NASCIMENTO */
+                _buildDatePicker(context),
+                /** MAE */
                 Padding(
                   padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
                   child: TextField(
-                    controller: nascimentoController,
+                    controller: maeController,
                     style: textStyle,
                     onChanged: (value) {
-                      citizen.dateNyver = value;
+                      citizen.mae = value;
                     },
                     decoration: InputDecoration(
-                        labelText: 'Data de nascimento',
+                        labelText: 'Mãe',
+                        labelStyle: textStyle,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                  ),
+                ),
+                /** Pai */
+                Padding(
+                  padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                  child: TextField(
+                    controller: paiController,
+                    style: textStyle,
+                    onChanged: (value) {
+                      citizen.pai = value;
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Pai',
                         labelStyle: textStyle,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0))),
@@ -271,10 +301,12 @@ class CitizenDetailState extends State<CitizenDetail> {
 
     citizen.dateNyver = DateFormat.yMMMd().format(DateTime.now());
     String _saude;
-    for (int i = 0; i <= saudeValue.length-1; i++) {
-      if (saudeValue[i]) {
-        if (_saude.length > 1) _saude = ',';
-        citizen.saude = saudeList[i].id.toString();
+    for (int i = 0; i <= saudeValue.length - 1; i++) {
+      if (saudeValue[i] == true) {
+        if (_saude == null)
+          _saude = saudeList[i].id.toString();
+        else
+          _saude = _saude + ',' + saudeList[i].id.toString();
       }
     }
     citizen.saude = _saude;
@@ -282,9 +314,7 @@ class CitizenDetailState extends State<CitizenDetail> {
     int result;
     if (citizen.id != null) {
       // Case 1: Update operation
-      debugPrint(citizen.toString());
       result = await citizenHelper.updateCitizen(citizen);
-      debugPrint(result.toString());
     } else {
       // Case 2: Insert Operation
       result = await citizenHelper.insertCitizen(citizen);
@@ -303,6 +333,80 @@ class CitizenDetailState extends State<CitizenDetail> {
     moveToLastScreen();
   }
 
+  Widget _buildDatePicker(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showCupertinoModalPopup<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return _buildBottomPicker(
+              CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: dateNyver,
+                onDateTimeChanged: (DateTime newDateTime) {
+                  setState(() => dateNyver = newDateTime);
+                },
+              ),
+            );
+          },
+        );
+      },
+      child: _buildMenu(<Widget>[
+        const Text('Data de Nascimento'),
+        Text(
+          DateFormat('dd/MMMM/y').format(dateNyver),
+          style: const TextStyle(color: CupertinoColors.inactiveGray),
+        ),
+      ]),
+    );
+  }
+
+  Widget _buildBottomPicker(Widget picker) {
+    return Container(
+      height: 216.0,
+      padding: const EdgeInsets.only(top: 6.0),
+      color: CupertinoColors.white,
+      child: DefaultTextStyle(
+        style: const TextStyle(
+          color: CupertinoColors.black,
+          fontSize: 26.0,
+        ),
+        child: GestureDetector(
+          // Blocks taps from propagating to the modal sheet and popping.
+          onTap: () {},
+          child: SafeArea(
+            top: false,
+            child: picker,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenu(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: CupertinoTheme.of(context).scaffoldBackgroundColor,
+        border: const Border(
+          top: BorderSide(color: Color(0xFFBCBBC1), width: 0.0),
+          bottom: BorderSide(color: Color(0xFFBCBBC1), width: 0.0),
+        ),
+      ),
+      height: 44.0,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: children,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showAlertDialog(String name, String message) {
     AlertDialog alertDialog = AlertDialog(
       title: Text(name),
@@ -318,8 +422,6 @@ class CitizenDetailState extends State<CitizenDetail> {
           citizenHelper.getCitizenList(citizenIdent);
       _listCitizen.then((_citizen) {
         setState(() {
-          debugPrint('*********' + _citizen.toString());
-
           this.citizen = _citizen[0];
         });
       });
@@ -338,6 +440,12 @@ class CitizenDetailState extends State<CitizenDetail> {
             /** CARREGAR ESTADO DE SAUDE */
             this.saudeValue =
                 List<bool>.filled(saudeList.length, false, growable: true);
+            if (citizen.saude != null) {
+              List<String> _tSaude = citizen.saude.toString().split(",");
+              for (var i = 0; i < _tSaude.length; i++) {
+                this.saudeValue[int.parse(_tSaude[i]) - 1] = true;
+              }
+            }
           } else {
             saudeHelper.insertSaude(Saude('Gestante'));
             saudeHelper.insertSaude(Saude('Diabetes'));
